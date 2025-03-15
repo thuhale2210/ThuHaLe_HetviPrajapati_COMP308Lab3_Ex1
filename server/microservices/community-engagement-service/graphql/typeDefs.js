@@ -1,43 +1,86 @@
-import { gql } from 'apollo-server-express';
+// import { gql } from 'apollo-server-express';
+
+// const typeDefs = gql`
+//   extend type User @key(fields: "id") {
+//     id: ID! @external
+//     role: String! @external
+//     createdAt: String! @external
+//   }
+
+//   type CommunityPost {
+//     id: ID!
+//     author: User!
+//     title: String!
+//     content: String!
+//     category: String!
+//     createdAt: String!
+//   }
+
+//   type HelpRequest {
+//     id: ID!
+//     author: User!
+//     description: String!
+//     location: String
+//     isResolved: Boolean!
+//     volunteers: [User]
+//     createdAt: String!
+//     updatedAt: String
+//   }
+
+//   extend type Query {
+//     getCommunityPosts: [CommunityPost]
+//     getHelpRequests: [HelpRequest]
+//   }
+
+//   extend type Mutation {
+//     createPost(title: String!, content: String!, category: String!): CommunityPost
+//     createHelpRequest(description: String!, location: String): HelpRequest
+//     resolveHelpRequest(id: ID!): Boolean
+//     volunteerForHelpRequest(id: ID!): HelpRequest
+//   }
+// `;
+
+// export default typeDefs;
+
+
+const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
-  extend type User @key(fields: "id") {
-    id: ID! @external
-    role: String! @external
-    createdAt: String! @external
-  }
-
   type CommunityPost {
     id: ID!
-    author: User!
+    author: ID!
     title: String!
     content: String!
     category: String!
-    createdAt: String!
-  }
-
-  type HelpRequest {
-    id: ID!
-    author: User!
-    description: String!
-    location: String
-    isResolved: Boolean!
-    volunteers: [User]
+    aiSummary: String
     createdAt: String!
     updatedAt: String
   }
 
-  extend type Query {
-    getCommunityPosts: [CommunityPost]
-    getHelpRequests: [HelpRequest]
+  type HelpRequest {
+    id: ID!
+    author: ID!
+    description: String!
+    location: String
+    isResolved: Boolean!
+    volunteers: [ID!]
+    createdAt: String!
+    updatedAt: String
   }
 
-  extend type Mutation {
+  type Query {
+    getAllPosts: [CommunityPost]
+    getAllHelpRequests: [HelpRequest]
+  }
+
+  type Mutation {
     createPost(title: String!, content: String!, category: String!): CommunityPost
+    updatePost(id: ID!, title: String, content: String, category: String): CommunityPost
+    deletePost(id: ID!): Boolean
     createHelpRequest(description: String!, location: String): HelpRequest
-    resolveHelpRequest(id: ID!): Boolean
-    volunteerForHelpRequest(id: ID!): HelpRequest
+    resolveHelpRequest(id: ID!): HelpRequest
+    volunteerForHelp(id: ID!): HelpRequest
   }
 `;
 
-export default typeDefs;
+module.exports = typeDefs;
