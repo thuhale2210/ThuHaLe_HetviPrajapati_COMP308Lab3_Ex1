@@ -1,39 +1,65 @@
-const express = require("express");
-const { ApolloServer } = require("apollo-server-express");
-const { buildSubgraphSchema } = require("@apollo/subgraph");
-const jwt = require("jsonwebtoken"); // ✅ Import JWT
-require("dotenv").config(); // ✅ Ensure env is loaded
-const connectDB = require("./config/mongoose");
-const typeDefs = require("./graphql/typeDefs");
-const resolvers = require("./graphql/resolvers");
+import dotenv from 'dotenv';
+dotenv.config({ path: './.env' });
+//
+import { parse } from 'graphql';  // Import GraphQL parser
+import { config } from './config/config.js';
+import express from 'express';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { buildSubgraphSchema } from '@apollo/subgraph';
 
-const app = express();
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import jwt from 'jsonwebtoken';
+import connectDB from './config/mongoose.js';
+import typeDefs from './graphql/typeDefs.js';
+import resolvers from './graphql/resolvers.js';
+
+// Connect to MongoDB
 connectDB();
 
-// ✅ Add Token Verification in Context
-const server = new ApolloServer({
-  schema: buildSubgraphSchema({ typeDefs, resolvers }), // Enable Federation
-  context: ({ req }) => {
-    const authHeader = req.headers.authorization;
-    let userId = null;
+// Create an Express app
+const app = express();
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:4000', 'https://studio.apollographql.com'],
+  credentials: true,
+}));
+// 
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-    if (authHeader) {
-      const token = authHeader.split("Bearer ")[1];
+// ✅ Fix: Parse `typeDefs` before passing it to `buildSubgraphSchema`
+const schema = buildSubgraphSchema([{ typeDefs, resolvers }]);
+
+const server = new ApolloServer({
+  schema,
+  introspection: true,
+});
+
+async function startServer() {
+  await server.start();
+  // Apply the Apollo GraphQL middleware and set the path to /graphql
+  app.use('/graphql', expressMiddleware(server, {
+    context: async ({ req, res }) => {
+      // Get the user token from the headers.
+      const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+      let user = null;
       if (token) {
         try {
-          const decoded = jwt.verify(token, process.env.JWT_SECRET);
-          userId = decoded.userId; // ✅ Extract userId
+          const decoded = jwt.verify(token, config.JWT_SECRET);
+          user = { username: decoded.username };
         } catch (error) {
-          console.error("Invalid or Expired Token:", error.message);
+          console.error("Error verifying token:", error);
         }
       }
+      // Add the user to the context
+      return { user, res };
     }
-
-    return { userId }; // ✅ Ensure userId is now in context
-  },
-});
-
-server.start().then(() => {
-  server.applyMiddleware({ app });
-  app.listen(4002, () => console.log(`✅ Community Engagement Service running at http://localhost:4002/graphql`));
-});
+  }));
+  //
+  app.listen(config.port, () => console.log(`🚀 Community Engagement Microservice running at http://localhost:${config.port}/graphql`));
+}
+//
+startServer();

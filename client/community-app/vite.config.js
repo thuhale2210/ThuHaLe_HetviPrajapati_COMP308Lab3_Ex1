@@ -7,23 +7,52 @@
 // })
 
 
+// import { defineConfig } from 'vite';
+// import react from '@vitejs/plugin-react';
+// import federation from '@originjs/vite-plugin-federation';
+
+// export default defineConfig({
+//   plugins: [
+//     react(),
+//     federation({
+//       name: "community",
+//       filename: "remoteEntry.js",
+//       exposes: {
+//         "./Posts": "./src/PostComponent.jsx",
+//         "./HelpRequests": "./src/HelpRequestComponent.jsx",
+//       }
+//     })
+//   ],
+//   server: {
+//     port: 5002,
+//   }
+// });
+
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import federation from '@originjs/vite-plugin-federation';
-
+//
 export default defineConfig({
+  server: {
+    port: 3002,
+  },
   plugins: [
     react(),
     federation({
-      name: "community",
-      filename: "remoteEntry.js",
+      name: 'communityApp',
+      filename: 'remoteEntry.js',
       exposes: {
-        "./Posts": "./src/PostComponent.jsx",
-        "./HelpRequests": "./src/HelpRequestComponent.jsx",
-      }
-    })
+        './App': './src/App',
+      },
+      shared: ['react', 'react-dom', '@apollo/client', 'graphql'],
+    }),
   ],
-  server: {
-    port: 5002,
-  }
+  build: {
+    modulePreload: false,
+    target: 'esnext',
+    minify: false,
+    cssCodeSplit: false,
+  },
+
 });

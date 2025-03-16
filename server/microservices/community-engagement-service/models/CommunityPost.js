@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const CommunityPostSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -10,5 +10,4 @@ const CommunityPostSchema = new mongoose.Schema({
   updatedAt: { type: Date },
 });
 
-module.exports = mongoose.model("CommunityPost", CommunityPostSchema);
-
+export default mongoose.model("CommunityPost", CommunityPostSchema);

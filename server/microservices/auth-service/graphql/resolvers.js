@@ -1,7 +1,6 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-require("dotenv").config();
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
 const resolvers = {
   Query: {
@@ -44,5 +43,5 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+export default resolvers;
 

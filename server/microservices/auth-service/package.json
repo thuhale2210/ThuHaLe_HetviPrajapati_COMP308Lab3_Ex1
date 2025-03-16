@@ -4,16 +4,20 @@
   "description": "Authentication Microservice for COMP308 Lab3",
   "main": "auth-microservice.js",
   "dependencies": {
+    "@apollo/server": "^4.11.3",
     "@apollo/subgraph": "^2.10.0",
     "apollo-server-express": "^3.12.0",
     "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "graphql": "^16.10.0",
+    "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.9.1"
   },
+  "type": "module",
   "scripts": {
     "start": "node auth-microservice.js"
   }
