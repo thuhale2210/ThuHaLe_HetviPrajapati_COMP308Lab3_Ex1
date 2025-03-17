@@ -48,8 +48,14 @@ export default defineConfig({
       shared: ['react', 'react-dom', '@apollo/client', 'graphql'],
     }),
   ],
-
+  server: {
+    port: 3001,
+    cors: true,
+    strictPort: true,
+  },
   build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
     modulePreload: false,
     target: 'esnext',
     minify: false,

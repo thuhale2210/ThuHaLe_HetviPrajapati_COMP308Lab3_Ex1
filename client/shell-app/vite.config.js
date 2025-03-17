@@ -22,5 +22,12 @@ export default defineConfig({
       },
       shared: ['react', 'react-dom', '@apollo/client', 'graphql'],
     }),
-  ],
+  ], server: {
+    port: 3000,
+    cors: true,
+    strictPort: true,
+  },
+  build: {
+    target: 'esnext',
+  },
 });

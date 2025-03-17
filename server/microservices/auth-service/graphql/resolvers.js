@@ -4,8 +4,12 @@ import User from "../models/User.js";
 
 const resolvers = {
   Query: {
-    async getUser(_, { id }) {
-      return await User.findById(id);
+    currentUser: async (_, __, { user }) => {
+      if (!user || !user._id) {
+        throw new Error("Unauthorized: No valid user found");
+      }
+      console.log("✅ Fetching user with ID:", user._id);
+      return await User.findById(user._id);
     },
   },
 

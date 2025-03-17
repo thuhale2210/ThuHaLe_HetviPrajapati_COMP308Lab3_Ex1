@@ -4,6 +4,7 @@
   "description": "Community Engagement Microservice for COMP308 Lab3",
   "main": "community-engagement-microservice.js",
   "dependencies": {
+    "@apollo/gateway": "^2.10.0",
     "@apollo/server": "^4.11.3",
     "@apollo/subgraph": "^2.10.0",
     "apollo-server-express": "^3.12.0",

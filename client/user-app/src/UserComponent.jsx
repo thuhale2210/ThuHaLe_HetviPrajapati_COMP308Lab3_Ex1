@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, gql } from '@apollo/client';
-import { Alert, Button, Form, Container, Nav, Spinner } from 'react-bootstrap';
 
-// GraphQL mutations
 const LOGIN_MUTATION = gql`
   mutation Login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
@@ -39,7 +37,7 @@ function UserComponent() {
     const [signup] = useMutation(SIGNUP_MUTATION, {
         onCompleted: () => {
             alert("Registration successful! Please log in.");
-            setActiveTab('login'); // Switch to login view
+            setActiveTab('login');
         },
         onError: (error) => setAuthError(error.message || 'Registration failed'),
     });
@@ -64,53 +62,38 @@ function UserComponent() {
     };
 
     return (
-        <Container className="p-5">
-            <Nav variant="tabs" activeKey={activeTab} onSelect={(k) => setActiveTab(k)}>
-                <Nav.Item>
-                    <Nav.Link eventKey="login">Login</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link eventKey="signup">Sign Up</Nav.Link>
-                </Nav.Item>
-            </Nav>
+        <div className="h-screen flex flex-col justify-center items-center">
+            <h1 className="text-3xl font-bold mb-6">Community Engagement App</h1>
+            <div className="p-6 max-w-md mx-auto bg-white text-gray-900 rounded-xl shadow-md">
+                <div className="flex mb-4">
+                    <button className={`flex-1 p-3 rounded-lg text-lg font-semibold ${activeTab === 'login' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => setActiveTab('login')}>Login</button>
+                    <button className={`flex-1 p-3 rounded-lg text-lg font-semibold ${activeTab === 'signup' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => setActiveTab('signup')}>Sign Up</button>
+                </div>
 
-            <Form onSubmit={handleSubmit} className="mt-3">
-                {activeTab === 'signup' && (
-                    <Form.Group className="mb-3">
-                        <Form.Label>Username</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Username"
-                            value={username}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {activeTab === 'signup' && (
+                        <input className="w-full p-3 rounded-md bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
+                            type="text" placeholder="Username" value={username}
                             onChange={(e) => setUsername(e.target.value)} />
-                    </Form.Group>
-                )}
+                    )}
 
-                <Form.Group className="mb-3">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                        type="email"
-                        placeholder="Email"
-                        value={email}
+                    <input className="w-full p-3 rounded-md bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
+                        type="email" placeholder="Email" value={email}
                         onChange={(e) => setEmail(e.target.value)} />
-                </Form.Group>
 
-                <Form.Group className="mb-3">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                        type="password"
-                        placeholder="Password"
-                        value={password}
+                    <input className="w-full p-3 rounded-md bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
+                        type="password" placeholder="Password" value={password}
                         onChange={(e) => setPassword(e.target.value)} />
-                </Form.Group>
 
-                {authError && <Alert variant="danger">{authError}</Alert>}
+                    {authError && <p className="text-red-500 text-sm">{authError}</p>}
 
-                <Button variant="primary" type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : activeTab === 'login' ? 'Login' : 'Sign Up'}
-                </Button>
-            </Form>
-        </Container>
+                    <button className="w-full bg-blue-500 text-white p-3 rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
+                        type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? 'Loading...' : activeTab === 'login' ? 'Login' : 'Sign Up'}
+                    </button>
+                </form>
+            </div>
+        </div>
     );
 }
 
