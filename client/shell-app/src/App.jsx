@@ -1,117 +1,70 @@
-// import React, { useState, useEffect, lazy, Suspense } from 'react';
-// import { useQuery, gql } from '@apollo/client';
-// import './App.css';
-
-// const UserApp = lazy(() => import('userApp/App'));
-// const CommunityApp = lazy(() => import('communityApp/App'));
-
-// // GraphQL query to check the current user's authentication status
-// const CURRENT_USER_QUERY = gql`
-//   query CurrentUser {
-//     currentUser {
-//       username
-//     }
-//   }
-// `;
-
-// function App() {
-//   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-//   // Use Apollo's useQuery hook to perform the authentication status check on app load
-//   const { loading, error, data } = useQuery(CURRENT_USER_QUERY, {
-//     fetchPolicy: 'network-only',
-//   });
-
-//   useEffect(() => {
-//     // Listen for the custom loginSuccess event from the UserApp
-//     const handleLoginSuccess = (event) => {
-//       setIsLoggedIn(event.detail.isLoggedIn);
-//     };
-
-//     window.addEventListener('loginSuccess', handleLoginSuccess);
-
-//     // Check the authentication status based on the query's result
-//     if (!loading && !error) {
-//       setIsLoggedIn(!!data.currentUser);
-//     }
-
-//     return () => {
-//       window.removeEventListener('loginSuccess', handleLoginSuccess);
-//     };
-//   }, [loading, error, data]);
-
-//   if (loading) return <div>Loading...</div>;
-//   if (error) return <div>Error! {error.message}</div>;
-
-//   return (
-//     <div className="App">
-//       <Suspense fallback={<div>Loading...</div>}>
-//         {!isLoggedIn ? <UserApp /> : <CommunityApp />}
-//       </Suspense>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 
-// Import Micro-Frontends
 const UserApp = lazy(() => import('userApp/App'));
 const CommunityApp = lazy(() => import('communityApp/App'));
 
-// GraphQL Query to fetch user details (REPLACING `currentUser`)
-const GET_USER_QUERY = gql`
-  query getUser($id: ID!) {
-    getUser(id: $id) {
+const CURRENT_USER_QUERY = gql`
+  query CurrentUser {
+    currentUser {
       username
     }
   }
 `;
 
-function App() {
+function MainApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId, setUserId] = useState(null);
+  const navigate = useNavigate();
+
+  const { loading, error, data, refetch } = useQuery(CURRENT_USER_QUERY, {
+    fetchPolicy: 'network-only',
+  });
 
   useEffect(() => {
-    // Get user ID from local storage (Set during login)
-    const storedUserId = localStorage.getItem("userId");
-    if (storedUserId) {
-      setUserId(storedUserId);
-      setIsLoggedIn(true);
-    }
-
-    // Listen for loginSuccess event from UserApp
-    const handleLoginSuccess = (event) => {
-      const { userId } = event.detail;
-      localStorage.setItem("userId", userId); // Store user ID
-      setUserId(userId);
-      setIsLoggedIn(true);
+    const handleLoginSuccess = () => {
+      refetch().then(({ data }) => {
+        if (data?.currentUser) {
+          setIsLoggedIn(true);
+          navigate('/');
+        }
+      });
     };
 
     window.addEventListener('loginSuccess', handleLoginSuccess);
     return () => window.removeEventListener('loginSuccess', handleLoginSuccess);
-  }, []);
+  }, [navigate, refetch]);
 
-  // Fetch user data only if logged in
-  const { loading, error } = useQuery(GET_USER_QUERY, {
-    variables: { id: userId },
-    skip: !userId, // Don't run the query if no userId is found
-    fetchPolicy: 'network-only',
-  });
+  useEffect(() => {
+    if (!loading) {
+      if (error || !data?.currentUser) {
+        setIsLoggedIn(false);
+      } else {
+        setIsLoggedIn(true);
+      }
+    }
+  }, [loading, error, data]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error! {error.message}</div>;
+  if (loading) return <div>Checking authentication...</div>;
 
   return (
-    <div className="App">
-      <Suspense fallback={<div>Loading...</div>}>
-        {!isLoggedIn ? <UserApp /> : <CommunityApp />}
-      </Suspense>
-    </div>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <Suspense fallback={<div>Loading...</div>}>
+            {isLoggedIn ? <CommunityApp /> : <UserApp />}
+          </Suspense>
+        }
+      />
+    </Routes>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Router>
+      <MainApp />
+    </Router>
+  );
+}
