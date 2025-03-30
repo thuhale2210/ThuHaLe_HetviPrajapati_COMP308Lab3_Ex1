@@ -31,8 +31,22 @@ function MainApp() {
       });
     };
 
+    const handleLogoutSuccess = () => {
+      refetch().then(({ data }) => {
+        if (!data?.currentUser) {
+          setIsLoggedIn(false);
+          navigate('/');
+        }
+      });
+    };
+
     window.addEventListener('loginSuccess', handleLoginSuccess);
-    return () => window.removeEventListener('loginSuccess', handleLoginSuccess);
+    window.addEventListener('logoutSuccess', handleLogoutSuccess);
+
+    return () => {
+      window.removeEventListener('loginSuccess', handleLoginSuccess);
+      window.removeEventListener('logoutSuccess', handleLogoutSuccess);
+    };
   }, [navigate, refetch]);
 
   useEffect(() => {

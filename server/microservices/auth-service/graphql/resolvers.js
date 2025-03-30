@@ -1,4 +1,3 @@
-// ✅ auth-service/resolvers.js
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
@@ -20,6 +19,7 @@ const resolvers = {
       return user;
     }
   },
+
   Mutation: {
     async signup(_, { username, email, password, role }, { res }) {
       const existingUser = await User.findOne({ email });
@@ -40,6 +40,7 @@ const resolvers = {
 
       return { user, token };
     },
+
     async login(_, { email, password }, { res }) {
       const user = await User.findOne({ email });
       if (!user) throw new Error("User not found");
@@ -58,7 +59,8 @@ const resolvers = {
 
       return { user, token };
     },
-    logout: async (_, __, { res }) => {
+
+    async logout(_, __, { res }) {
       res.clearCookie('token', {
         httpOnly: true,
         sameSite: 'Lax',
@@ -67,9 +69,11 @@ const resolvers = {
       return true;
     }
   },
+
   User: {
     __resolveReference: async (ref) => await User.findById(ref.id),
   }
 };
 
+// ✅ Fix: export default
 export default resolvers;
