@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "scripts": {
+    "start:all": "concurrently \"cd server/microservices/auth-service && npm start\" \"cd server/microservices/community-engagement-service && npm start\" \"cd server && npm start\" \"cd client/user-app && npm run deploy\" \"cd client/community-app && npm run deploy\" \"cd client/shell-app && npm run dev\""
+  }
+}
