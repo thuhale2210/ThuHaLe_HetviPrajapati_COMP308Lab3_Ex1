@@ -1,0 +1,15 @@
+{
+    "name": "ai-service",
+    "version": "1.0.0",
+    "description": "Microservice for AI integration using the Gemini API (news summaries, discussion topics, sentiment analysis, event suggestions).",
+    "main": "ai-microservice.js",
+    "scripts": {
+      "start": "node ai-microservice.js"
+    },
+    "dependencies": {
+      "apollo-server": "^3.11.1",
+      "graphql": "^16.8.1",
+      "axios": "^1.4.0"
+    }
+  }
+  
