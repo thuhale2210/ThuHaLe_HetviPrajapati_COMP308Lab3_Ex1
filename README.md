@@ -7,14 +7,14 @@ An AI-driven community engagement platform built with a microservices architectu
 ```
 root/
 ├── client/
-│   ├── shell-app/              # Frontend container app
-│   ├── user-app/               # Frontend micro-app for user features
-│   └── community-app/          # Frontend micro-app for community features
+│   ├── shell-app/                             # Frontend container app
+│   ├── user-app/                              # Frontend micro-app for user features
+│   └── community-app/                         # Frontend micro-app for community features
 ├── server/
 │   ├── microservices/
-│   │   ├── auth-app/           # Auth microservice
-│   │   └── community-app/      # Community microservice
-│   └── gateway.js              # Apollo Gateway
+│   │   ├── auth-service/                      # Auth microservice
+│   │   └── community-engagement-service/      # Community microservice
+│   └── gateway.js                             # Apollo Gateway
 ```
 
 ## 🛠️ Local Setup Instructions
@@ -39,8 +39,8 @@ cd Group5COMP308Project
 Navigate into each app directory and install dependencies:
 
 ```bash
-cd server/microservices/auth-app && npm install
-cd ../community-app && npm install
+cd server/microservices/auth-service/ && npm install
+cd ../community-engagement-service/ && npm install
 cd ../../ && npm install          
 
 cd ../../client/user-app && npm install
@@ -55,14 +55,14 @@ You’ll need to use **6 separate terminals** to run each service:
 1. **Auth Microservice**
 
 ```bash
-cd server/microservices/auth-app
+cd server/microservices/auth-service
 npm start
 ```
 
 2. **Community Microservice**
 
 ```bash
-cd server/microservices/community-app
+cd server/microservices/community-engagement-service
 npm start
 ```
 
